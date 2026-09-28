@@ -83,7 +83,14 @@ registra.
 - Tempos de uma máquina emulada não valem; os bits valem.
 - O Apple M4 tem 4 núcleos de desempenho e 6 de eficiência, então o ganho com
   threads não é linear e não deve ser lido como se fosse.
-- `{.17}` na Sword não imprime os últimos dígitos exatos (issue #34), então os
-  valores decimais nos CSVs da Sword são aproximados: o que vale são os bits.
-- `num.Sin` e `num.Cos` são lentos para |x| > π/4 por causa da redução de
-  argumento (issue #35); o núcleo, sem redução, é tão rápido quanto a libm.
+- Os resultados em `results/` são da Sword no commit `23acc20` do `develop`,
+  que corrigiu a impressão exata de números (issue #34) e a redução de argumento
+  de `num.Sin` e `num.Cos` (issue #35). `baseline/` é a mesma matriz antes das
+  correções (commit `f4a4195`), nas máquinas do GitHub: é onde se vê o seno a
+  ~300 ns por chamada.
+- `gh-*` são máquinas do GitHub Actions (x86-64 AMD EPYC, arm64 Neoverse, Apple
+  M1 virtual), com 3 ou 4 núcleos e compartilhadas: os tempos são indicativos, e
+  8 e 16 threads nelas são mais threads que núcleos.
+- A não repetibilidade com o número de threads fixo (E1b) aparece com o OpenMP
+  do GCC (libgomp, Linux); o do LLVM (libomp, macOS) repetiu o resultado nas 20
+  execuções. O que varia com o número de threads varia nos dois.
