@@ -1,0 +1,60 @@
+// Sin, Cos, Exp and Log from std/num over the argument files, each result
+// written as raw bits to out/<platform>-num-<fn>.bin.
+// Prints: fn,count,best_ns_per_call
+
+import "std/fs"
+import "std/io"
+import "std/mem"
+import "std/num"
+import "std/os"
+import "std/strings"
+import "std/time"
+
+func run(platform string, name string, f func(f64) f64, args string,
+         mut heap mem.Allocator) !void {
+    raw := try fs.ReadAll(args, heap)
+    xs := [*]f64(raw.ptr)[0..raw.len / 8]
+    mut ys := mem.Alloc[f64](heap, xs.len) orelse return error.OutOfMemory
+    mut best i64 = 0
+    for r in 0..5 {
+        start := time.Now()
+        for i in 0..xs.len {
+            ys[i] = f(xs[i])
+        }
+        took := time.Since(start).AsNanos()
+        if r == 0 || took < best {
+            best = took
+        }
+    }
+    mut room := [256]u8{}
+    mut used u64 = 0
+    for part in [4]string{"out/", platform, "-num-", name} {
+        for k in 0..part.len {
+            room[used] = part[k]
+            used += 1
+        }
+    }
+    for k in 0..4 {
+        room[used] = ".bin"[k]
+        used += 1
+    }
+    try fs.WriteAll(string(room[0..used]), [*]u8(ys.ptr)[0..ys.len * 8])
+    try io.Printf("num-{},{},{.2}\n", name, xs.len, f64(best) / f64(xs.len))
+    mem.Free[f64](heap, ys)
+    mem.Free[u8](heap, raw)
+}
+
+func main() !int {
+    mut platform := "here"
+    if os.Argc() > 1 {
+        platform = os.Arg(1)
+    }
+    mut heap := mem.NewSystem()
+    try run(platform, "sin", num.Sin, "trig.bin", &heap)
+    try run(platform, "sinnear", num.Sin, "near.bin", &heap)
+    try run(platform, "cos", num.Cos, "trig.bin", &heap)
+    try run(platform, "exp", num.Exp, "exp.bin", &heap)
+    try run(platform, "expunit", num.Exp, "unit.bin", &heap)
+    try run(platform, "log", num.Log, "log.bin", &heap)
+    return 0
+}

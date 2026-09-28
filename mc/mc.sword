@@ -1,0 +1,104 @@
+// Monte Carlo estimate of the integral of exp(-x^2) over [0, 1], in Sword.
+// Sample i is Philox's i-th number for the seed, exp is num.Exp.
+//
+//   plain  parallel for ... reduce(+)
+//   exact  parallel for ... reduce(num.MergeExact)
+//   mix    reduce(+), but sample i from splitmix64(seed + i) as the C program's
+//          `index` method draws it, so the two differ only in the language
+//
+// Prints: method,threads,bits,value,median_ns
+
+import "std/io"
+import "std/num"
+import "std/os"
+import "std/rand"
+import "std/strings"
+import "std/time"
+
+det func unit(v u64) f64 {
+    return f64(v >> 11) * (1.0 / 9007199254740992.0)
+}
+
+det func mix(z0 u64) u64 {
+    mut z := z0 +% 0x9E3779B97F4A7C15
+    z = (z ^ (z >> 30)) *% 0xBF58476D1CE4E5B9
+    z = (z ^ (z >> 27)) *% 0x94D049BB133111EB
+    return z ^ (z >> 31)
+}
+
+det func mixed(seed u64, n u64) f64 {
+    mut total f64 = 0.0
+    parallel for i in 0..n reduce(+: total) {
+        x := unit(mix(seed +% i))
+        total += num.Exp(-x * x)
+    }
+    return total / f64(n)
+}
+
+det func plain(seed u64, n u64) f64 {
+    mut total f64 = 0.0
+    parallel for i in 0..n reduce(+: total) {
+        x := unit(rand.At(seed, i))
+        total += num.Exp(-x * x)
+    }
+    return total / f64(n)
+}
+
+det func exact(seed u64, n u64) f64 {
+    mut total := num.NewExact()
+    parallel for i in 0..n reduce(num.MergeExact: total) {
+        x := unit(rand.At(seed, i))
+        total.Add(num.Exp(-x * x))
+    }
+    return total.Value() / f64(n)
+}
+
+func bitsOf(v f64) u64 {
+    mut x := v
+    p := [*]u64(&x)
+    return p[0]
+}
+
+func median(mut ns []i64) i64 {
+    for i in 1..ns.len {
+        mut j := i
+        for j > 0 && ns[j-1] > ns[j] {
+            t := ns[j]
+            ns[j] = ns[j-1]
+            ns[j-1] = t
+            j -= 1
+        }
+    }
+    return ns[ns.len / 2]
+}
+
+func main() !int {
+    if os.Argc() < 3 {
+        try io.Println("usage: mc plain|exact|mix samples [reps]")
+        return 2
+    }
+    method := os.Arg(1)
+    n := try strings.ParseU64(os.Arg(2))
+    mut reps u64 = 5
+    if os.Argc() > 3 {
+        reps = strings.ParseU64(os.Arg(3)) catch 5
+    }
+    threads := os.EnvOr("SWORD_THREADS", "default")
+
+    mut times := [64]i64{}
+    mut result f64 = 0.0
+    for r in 0..reps {
+        start := time.Now()
+        if method == "plain" {
+            result = plain(20261013, n)
+        } else if method == "mix" {
+            result = mixed(20261013, n)
+        } else {
+            result = exact(20261013, n)
+        }
+        times[r] = time.Since(start).AsNanos()
+    }
+    try io.Printf("sword-{},{},{x},{.17},{}\n", method, threads, bitsOf(result),
+                  result, median(times[0..reps]))
+    return 0
+}

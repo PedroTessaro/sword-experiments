@@ -1,0 +1,94 @@
+// The sum of a file of doubles in Sword. The thread count is SWORD_THREADS.
+//
+//   plain  parallel for ... reduce(+)
+//   kahan  parallel for ... reduce(num.Merge), a compensated sum
+//   exact  parallel for ... reduce(num.MergeExact), rounded once at the end
+//
+// Prints: method,threads,bits,value,median_ns
+
+import "std/fs"
+import "std/io"
+import "std/mem"
+import "std/num"
+import "std/os"
+import "std/strings"
+import "std/time"
+
+det func plain(xs []f64) f64 {
+    mut total f64 = 0.0
+    parallel for i in 0..xs.len reduce(+: total) {
+        total += xs[i]
+    }
+    return total
+}
+
+det func kahan(xs []f64) f64 {
+    mut total := num.NewKahan()
+    parallel for i in 0..xs.len reduce(num.Merge: total) {
+        total.Add(xs[i])
+    }
+    return total.Value()
+}
+
+det func exact(xs []f64) f64 {
+    mut total := num.NewExact()
+    parallel for i in 0..xs.len reduce(num.MergeExact: total) {
+        total.Add(xs[i])
+    }
+    return total.Value()
+}
+
+func bitsOf(v f64) u64 {
+    mut x := v
+    p := [*]u64(&x)
+    return p[0]
+}
+
+func median(mut ms []i64) i64 {
+    for i in 1..ms.len {
+        mut j := i
+        for j > 0 && ms[j-1] > ms[j] {
+            t := ms[j]
+            ms[j] = ms[j-1]
+            ms[j-1] = t
+            j -= 1
+        }
+    }
+    return ms[ms.len / 2]
+}
+
+func main() !int {
+    if os.Argc() < 3 {
+        try io.Println("usage: sum file plain|kahan|exact [reps]")
+        return 2
+    }
+    path := os.Arg(1)
+    method := os.Arg(2)
+    mut reps u64 = 7
+    if os.Argc() > 3 {
+        reps = strings.ParseU64(os.Arg(3)) catch 7
+    }
+    threads := os.EnvOr("SWORD_THREADS", "default")
+
+    mut heap := mem.NewSystem()
+    raw := try fs.ReadAll(path, &heap)
+    xs := [*]f64(raw.ptr)[0..raw.len / 8]
+
+    mut times := [64]i64{}
+    mut result f64 = 0.0
+    for r in 0..reps {
+        start := time.Now()
+        if method == "plain" {
+            result = plain(xs)
+        } else if method == "kahan" {
+            result = kahan(xs)
+        } else {
+            result = exact(xs)
+        }
+        times[r] = time.Since(start).AsNanos()
+    }
+    ns := median(times[0..reps])
+    try io.Printf("sword-{},{},{x},{.17},{}\n", method, threads, bitsOf(result),
+                  result, ns)
+    return 0
+}

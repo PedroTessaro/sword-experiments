@@ -1,0 +1,9 @@
+results/*/bits/
+*.bin
+sum/sum_sword
+mc/mc_sword
+math/num_sword
+data/gen
+math/args
+math/libm
+math/out/

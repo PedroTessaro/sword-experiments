@@ -1,0 +1,64 @@
+# Every experiment on GitHub's own machines: real x86-64 and arm64 Linux, and
+# an Apple Silicon Mac. Started by hand, against any commit of Sword; the
+# results come back as one artifact per machine.
+name: Run the experiments
+
+on:
+  workflow_dispatch:
+    inputs:
+      sword_ref:
+        description: Sword branch, tag or commit to build
+        default: develop
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            platform: gh-linux-x86_64
+          - runner: ubuntu-24.04-arm
+            platform: gh-linux-arm64
+          - runner: macos-latest
+            platform: gh-macos-arm64
+    name: ${{ matrix.platform }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: sword-experiments
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: PedroTessaro/sword
+          ref: ${{ inputs.sword_ref }}
+          path: sword
+
+      - name: Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang libssl-dev
+      - name: Dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: brew install libomp
+
+      - name: Build Sword
+        run: make -C sword
+
+      - name: Run
+        working-directory: sword-experiments
+        env:
+          CC: ${{ runner.os == 'Linux' && 'gcc' || 'cc' }}
+          SHIELD: ${{ github.workspace }}/sword/shield
+          NOTE: GitHub-hosted runner ${{ matrix.runner }}, shared with other jobs; times are indicative
+        run: ./run.sh ${{ matrix.platform }}
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ${{ matrix.platform }}
+          path: sword-experiments/results/${{ matrix.platform }}
