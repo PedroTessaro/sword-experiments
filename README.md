@@ -88,8 +88,8 @@ registra.
   de `num.Sin` e `num.Cos` (issue #35). `baseline/` é a mesma matriz antes das
   correções (commit `f4a4195`), nas máquinas do GitHub: é onde se vê o seno a
   ~300 ns por chamada.
-- `gh-*` são máquinas do GitHub Actions (x86-64 AMD EPYC, arm64 Neoverse, Apple
-  M1 virtual), com 3 ou 4 núcleos e compartilhadas: os tempos são indicativos, e
+- `gh-*` são máquinas do GitHub Actions (x86-64 Intel Xeon Platinum 8573C nos
+  resultados e AMD EPYC 7763 na linha de base, arm64 Neoverse, Apple M1 virtual), com 3 ou 4 núcleos e compartilhadas: os tempos são indicativos, e
   8 e 16 threads nelas são mais threads que núcleos.
 - A não repetibilidade com o número de threads fixo (E1b) aparece com o OpenMP
   do GCC (libgomp, Linux); o do LLVM (libomp, macOS) repetiu o resultado nas 20
