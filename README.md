@@ -27,8 +27,9 @@ arredondada e independente de qualquer programa testado. Os métodos são:
 Para cada método e cada número de threads (1, 2, 3, 4, 6, 8, 10, 16), guarda os
 bits do resultado e a mediana do tempo em 7 repetições.
 
-**E1b — repetibilidade.** A mesma configuração (dados `mixed`, 4 e 8 threads)
-executada 20 vezes: com o número de threads fixo, o resultado se repete?
+**E1b — repetibilidade.** A mesma configuração (dados `mixed`, com 2, 4, 8 e 16
+threads) executada 100 vezes cada: com o número de threads fixo, o resultado se
+repete?
 
 **E2 — Monte Carlo** (`mc/`). Estimativa de ∫₀¹ e^(−x²) dx com 10⁷ amostras: um
 gerador de números aleatórios, uma função elementar e uma soma, os três pontos
@@ -65,7 +66,8 @@ python3 analyze.py > results/summary.md
 
 `ONLY=math` roda só o E3, que não precisa de OpenMP. `NOTE="..."` grava uma
 observação sobre a máquina no `env.txt` (por exemplo, que ela é emulada).
-`THREADS`, `SUM_N`, `MC_N`, `MATH_N`, `REPS` e `REPEAT` mudam os tamanhos.
+`THREADS`, `SUM_N`, `MC_N`, `MATH_N`, `REPS`, `REPEAT` e `REPEAT_THREADS` mudam
+os tamanhos.
 
 No Linux, dentro do contêiner usado para os testes da linguagem:
 

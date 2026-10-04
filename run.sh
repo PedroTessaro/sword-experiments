@@ -88,9 +88,10 @@ for data in uniform mixed; do
 done
 
 # E1b: the same configuration again and again, the thread count fixed.
-REPEAT=${REPEAT:-20}
+REPEAT=${REPEAT:-100}
+REPEAT_THREADS=${REPEAT_THREADS:-"2 4 8 16"}
 echo "data,method,threads,bits,value,median_ns" > "$out/repeat.csv"
-for t in 4 8; do
+for t in $REPEAT_THREADS; do
     for r in $(seq 1 "$REPEAT"); do
         "$build/sum_omp" "$build/mixed.bin" omp "$t" 1 | sed "s/^/mixed,/" >> "$out/repeat.csv"
         SWORD_THREADS=$t "$build/sum_sword" "$build/mixed.bin" plain 1 | sed "s/^/mixed,/" >> "$out/repeat.csv"
