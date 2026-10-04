@@ -62,7 +62,15 @@ compilado (`make` no repositório da linguagem).
 ```sh
 SHIELD=../sword/shield ./run.sh <nome-da-plataforma>
 python3 analyze.py > results/summary.md
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/python figures.py          # results/figures/*.png e *.svg
 ```
+
+As figuras (rótulos em português, para o artigo) saem dos mesmos CSVs: F1
+resultados distintos por método em todas as plataformas e contagens de threads;
+F2 erro por número de threads; F3 tempo por número de threads; F4
+repetibilidade com threads fixas; F5 diferenças da libm entre plataformas; F6
+custo das funções elementares.
 
 `ONLY=math` roda só o E3, que não precisa de OpenMP. `NOTE="..."` grava uma
 observação sobre a máquina no `env.txt` (por exemplo, que ela é emulada).

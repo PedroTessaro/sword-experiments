@@ -4,14 +4,14 @@
 
 ```
 platform: gh-linux-arm64
-date: 2026-09-28T01:41:16Z
+date: 2026-10-04T15:04:19Z
 uname: Linux 6.17.0-1022-azure aarch64
 cpu: 0xd49
 cores: 4
 cc: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 openmp: -fopenmp
-shield: shield 0.1.0 (Tamahagane)
-sword commit: 23acc20
+shield: shield 0.2.0 (Fold)
+sword commit: 867d50f
 python: Python 3.12.3
 threads: 1 2 3 4 6 8 10 16
 sum_n: 10000000 mc_n: 10000000 math_n: 1000000 reps: 7
@@ -25,67 +25,71 @@ note: GitHub-hosted runner ubuntu-24.04-arm, shared with other jobs; times are i
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 237 | 6.41 | 6.41 | 1 |
-| c-omp | 7 of 8 | 20–237 | 6.60 | 1.73 | 4 |
-| c-ompkahan | 1 of 8 | 0 | 23.81 | 5.96 | 4 |
-| sword-plain | 1 of 8 | 4 | 6.79 | 1.80 | 4 |
-| sword-kahan | 1 of 8 | 0 | 24.90 | 6.25 | 4 |
-| sword-exact | 1 of 8 | 0 | 33.93 | 9.40 | 4 |
+| c-serial | 1 of 1 | 237 | 6.29 | 6.29 | 1 |
+| c-omp | 7 of 8 | 20–237 | 6.53 | 1.60 | 4 |
+| c-ompkahan | 1 of 8 | 0 | 23.74 | 5.96 | 4 |
+| sword-plain | 1 of 8 | 4 | 6.96 | 1.72 | 4 |
+| sword-kahan | 1 of 8 | 0 | 24.85 | 6.25 | 4 |
+| sword-exact | 1 of 8 | 0 | 33.87 | 9.42 | 4 |
 
 **mixed** (correctly rounded sum 159165645829.89481)
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 243 | 6.61 | 6.61 | 1 |
-| c-omp | 8 of 8 | 37–243 | 7.07 | 1.63 | 4 |
-| c-ompkahan | 3 of 8 | 0–1 | 23.74 | 5.98 | 4 |
-| sword-plain | 1 of 8 | 30 | 6.65 | 1.70 | 4 |
-| sword-kahan | 1 of 8 | 0 | 24.94 | 6.26 | 4 |
-| sword-exact | 1 of 8 | 0 | 60.63 | 16.05 | 6 |
+| c-serial | 1 of 1 | 243 | 6.47 | 6.47 | 1 |
+| c-omp | 8 of 8 | 37–243 | 6.77 | 1.60 | 4 |
+| c-ompkahan | 3 of 8 | 0–1 | 23.78 | 5.92 | 4 |
+| sword-plain | 1 of 8 | 30 | 6.65 | 1.57 | 4 |
+| sword-kahan | 1 of 8 | 0 | 24.79 | 6.31 | 4 |
+| sword-exact | 1 of 8 | 0 | 60.46 | 15.74 | 6 |
 
 ### E1b — the same run repeated, thread count fixed (mixed data)
 
 | method | threads | runs | distinct results |
 |---|---|---|---|
-| c-omp | 4 | 20 | 1 |
-| sword-plain | 4 | 20 | 1 |
-| c-omp | 8 | 20 | 3 |
-| sword-plain | 8 | 20 | 1 |
+| c-omp | 2 | 100 | 1 |
+| sword-plain | 2 | 100 | 1 |
+| c-omp | 4 | 100 | 1 |
+| sword-plain | 4 | 100 | 1 |
+| c-omp | 8 | 100 | 3 |
+| sword-plain | 8 | 100 | 1 |
+| c-omp | 16 | 100 | 5 |
+| sword-plain | 16 | 100 | 1 |
 
 ### E2 — Monte Carlo, integral of exp(-x²) on [0, 1]
 
 | method | distinct results | values seen | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-thread | 8 of 8 | 0.74684708827440205 … 0.74692123466732596 | 49.4 | 12.4 | 4 |
-| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 48.0 | 12.1 | 4 |
-| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 180.0 | 45.1 | 4 |
-| sword-plain | 1 of 8 | 0.74688899599934544 | 228.7 | 57.8 | 4 |
-| sword-mix | 1 of 8 | 0.74675913289817852 | 93.4 | 23.5 | 10 |
-| sword-exact | 1 of 8 | 0.74688899599934688 | 288.6 | 74.9 | 6 |
+| c-thread | 8 of 8 | 0.74684708827440216 … 0.74692123466732607 | 49.5 | 12.4 | 4 |
+| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 48.0 | 12.0 | 4 |
+| c-philox | 8 of 8 | 0.74688899599929437 … 0.74688899599935521 | 179.9 | 45.1 | 4 |
+| sword-plain | 1 of 8 | 0.74688899599934544 | 229.4 | 57.8 | 4 |
+| sword-mix | 1 of 8 | 0.74675913289817852 | 93.4 | 23.6 | 8 |
+| sword-exact | 1 of 8 | 0.74688899599934688 | 289.3 | 74.0 | 16 |
 
 ### E3 — elementary functions, cost
 
 | function | C library (ns/call) | std/num (ns/call) |
 |---|---|---|
-| sin | 15.42 | 16.31 |
-| sinnear | 6.94 | 3.15 |
-| cos | 15.65 | 16.38 |
-| exp | 6.12 | 8.73 |
-| expunit | 3.22 | 7.19 |
-| log | 4.04 | 8.31 |
+| sin | 15.37 | 16.27 |
+| sinnear | 6.96 | 3.14 |
+| cos | 15.65 | 16.45 |
+| exp | 6.11 | 8.72 |
+| expunit | 3.22 | 7.16 |
+| log | 4.04 | 8.30 |
 
 ## gh-linux-x86_64
 
 ```
 platform: gh-linux-x86_64
-date: 2026-09-28T01:41:25Z
+date: 2026-10-04T15:04:18Z
 uname: Linux 6.17.0-1022-azure x86_64
-cpu: INTEL(R) XEON(R) PLATINUM 8573C
+cpu: AMD EPYC 9V74 80-Core Processor
 cores: 4
 cc: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 openmp: -fopenmp
-shield: shield 0.1.0 (Tamahagane)
-sword commit: 23acc20
+shield: shield 0.2.0 (Fold)
+sword commit: 867d50f
 python: Python 3.12.3
 threads: 1 2 3 4 6 8 10 16
 sum_n: 10000000 mc_n: 10000000 math_n: 1000000 reps: 7
@@ -99,67 +103,71 @@ note: GitHub-hosted runner ubuntu-latest, shared with other jobs; times are indi
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 237 | 5.71 | 5.71 | 1 |
-| c-omp | 7 of 8 | 20–237 | 5.65 | 1.43 | 4 |
-| c-ompkahan | 1 of 8 | 0 | 22.51 | 5.66 | 4 |
-| sword-plain | 1 of 8 | 4 | 5.77 | 1.49 | 4 |
-| sword-kahan | 1 of 8 | 0 | 14.62 | 6.68 | 4 |
-| sword-exact | 1 of 8 | 0 | 32.87 | 17.02 | 6 |
+| c-serial | 1 of 1 | 237 | 8.20 | 8.20 | 1 |
+| c-omp | 7 of 8 | 20–237 | 8.21 | 2.10 | 4 |
+| c-ompkahan | 1 of 8 | 0 | 32.80 | 8.27 | 4 |
+| sword-plain | 1 of 8 | 4 | 8.22 | 2.12 | 4 |
+| sword-kahan | 1 of 8 | 0 | 15.31 | 6.92 | 4 |
+| sword-exact | 1 of 8 | 0 | 33.01 | 17.19 | 3 |
 
 **mixed** (correctly rounded sum 159165645829.89481)
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 243 | 5.65 | 5.65 | 1 |
-| c-omp | 8 of 8 | 37–243 | 5.64 | 1.45 | 4 |
-| c-ompkahan | 3 of 8 | 0–1 | 22.51 | 5.66 | 4 |
-| sword-plain | 1 of 8 | 30 | 5.68 | 1.53 | 4 |
-| sword-kahan | 1 of 8 | 0 | 14.67 | 6.68 | 4 |
-| sword-exact | 1 of 8 | 0 | 73.53 | 28.27 | 6 |
+| c-serial | 1 of 1 | 243 | 8.21 | 8.21 | 1 |
+| c-omp | 8 of 8 | 37–243 | 8.21 | 2.08 | 4 |
+| c-ompkahan | 3 of 8 | 0–1 | 32.77 | 8.27 | 4 |
+| sword-plain | 1 of 8 | 30 | 8.23 | 2.11 | 4 |
+| sword-kahan | 1 of 8 | 0 | 15.40 | 7.11 | 4 |
+| sword-exact | 1 of 8 | 0 | 66.81 | 23.99 | 6 |
 
 ### E1b — the same run repeated, thread count fixed (mixed data)
 
 | method | threads | runs | distinct results |
 |---|---|---|---|
-| c-omp | 4 | 20 | 1 |
-| sword-plain | 4 | 20 | 1 |
-| c-omp | 8 | 20 | 3 |
-| sword-plain | 8 | 20 | 1 |
+| c-omp | 2 | 100 | 1 |
+| sword-plain | 2 | 100 | 1 |
+| c-omp | 4 | 100 | 1 |
+| sword-plain | 4 | 100 | 1 |
+| c-omp | 8 | 100 | 3 |
+| sword-plain | 8 | 100 | 1 |
+| c-omp | 16 | 100 | 6 |
+| sword-plain | 16 | 100 | 1 |
 
 ### E2 — Monte Carlo, integral of exp(-x²) on [0, 1]
 
 | method | distinct results | values seen | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-thread | 8 of 8 | 0.74684708827440205 … 0.74692123466732596 | 62.1 | 28.1 | 4 |
-| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 60.0 | 27.6 | 8 |
-| c-philox | 8 of 8 | 0.74688899599929437 … 0.74688899599935532 | 170.9 | 73.6 | 4 |
-| sword-plain | 1 of 8 | 0.74688899599934544 | 398.6 | 112.0 | 4 |
-| sword-mix | 1 of 8 | 0.74675913289817852 | 111.3 | 38.7 | 4 |
-| sword-exact | 1 of 8 | 0.74688899599934688 | 423.5 | 124.3 | 16 |
+| c-thread | 8 of 8 | 0.74684708827440194 … 0.74692123466732596 | 54.6 | 23.5 | 4 |
+| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 52.2 | 23.0 | 4 |
+| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 185.5 | 79.0 | 8 |
+| sword-plain | 1 of 8 | 0.74688899599934544 | 377.0 | 102.0 | 4 |
+| sword-mix | 1 of 8 | 0.74675913289817852 | 117.8 | 35.0 | 4 |
+| sword-exact | 1 of 8 | 0.74688899599934688 | 390.4 | 120.3 | 16 |
 
 ### E3 — elementary functions, cost
 
 | function | C library (ns/call) | std/num (ns/call) |
 |---|---|---|
-| sin | 17.00 | 19.27 |
-| sinnear | 5.58 | 1.88 |
-| cos | 16.54 | 19.00 |
-| exp | 7.98 | 5.64 |
-| expunit | 4.42 | 6.35 |
-| log | 3.78 | 5.77 |
+| sin | 17.42 | 19.28 |
+| sinnear | 8.21 | 1.91 |
+| cos | 17.23 | 24.99 |
+| exp | 8.03 | 6.93 |
+| expunit | 4.65 | 6.91 |
+| log | 4.10 | 6.23 |
 
 ## gh-macos-arm64
 
 ```
 platform: gh-macos-arm64
-date: 2026-09-28T01:41:24Z
+date: 2026-10-04T15:04:22Z
 uname: Darwin 25.6.0 arm64
 cpu: Apple M1 (Virtual)
 cores: 3
 cc: Apple clang version 21.0.0 (clang-2100.1.1.101)
 openmp: -Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
-shield: shield 0.1.0 (Tamahagane)
-sword commit: 23acc20
+shield: shield 0.2.0 (Fold)
+sword commit: 867d50f
 python: Python 3.14.7
 threads: 1 2 3 4 6 8 10 16
 sum_n: 10000000 mc_n: 10000000 math_n: 1000000 reps: 7
@@ -173,67 +181,71 @@ note: GitHub-hosted runner macos-latest, shared with other jobs; times are indic
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 237 | 11.13 | 11.13 | 1 |
-| c-omp | 7 of 8 | 20–237 | 10.61 | 4.02 | 8 |
-| c-ompkahan | 1 of 8 | 0 | 46.87 | 14.57 | 4 |
-| sword-plain | 1 of 8 | 4 | 9.93 | 3.71 | 8 |
-| sword-kahan | 1 of 8 | 0 | 15.11 | 4.19 | 10 |
-| sword-exact | 1 of 8 | 0 | 38.16 | 9.79 | 8 |
+| c-serial | 1 of 1 | 237 | 11.18 | 11.18 | 1 |
+| c-omp | 7 of 8 | 20–237 | 11.79 | 4.88 | 16 |
+| c-ompkahan | 1 of 8 | 0 | 49.81 | 17.24 | 6 |
+| sword-plain | 1 of 8 | 4 | 11.99 | 3.89 | 4 |
+| sword-kahan | 1 of 8 | 0 | 15.05 | 5.43 | 16 |
+| sword-exact | 1 of 8 | 0 | 39.86 | 14.14 | 3 |
 
 **mixed** (correctly rounded sum 159165645829.89481)
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 243 | 10.42 | 10.42 | 1 |
-| c-omp | 8 of 8 | 37–243 | 12.51 | 3.62 | 3 |
-| c-ompkahan | 3 of 8 | 0–1 | 53.66 | 14.56 | 3 |
-| sword-plain | 1 of 8 | 30 | 11.22 | 3.60 | 6 |
-| sword-kahan | 1 of 8 | 0 | 17.22 | 4.24 | 6 |
-| sword-exact | 1 of 8 | 0 | 82.63 | 25.38 | 8 |
+| c-serial | 1 of 1 | 243 | 11.50 | 11.50 | 1 |
+| c-omp | 8 of 8 | 37–243 | 10.84 | 4.79 | 10 |
+| c-ompkahan | 3 of 8 | 0–1 | 45.41 | 16.26 | 16 |
+| sword-plain | 1 of 8 | 30 | 11.04 | 4.25 | 6 |
+| sword-kahan | 1 of 8 | 0 | 16.30 | 5.59 | 6 |
+| sword-exact | 1 of 8 | 0 | 94.05 | 27.68 | 10 |
 
 ### E1b — the same run repeated, thread count fixed (mixed data)
 
 | method | threads | runs | distinct results |
 |---|---|---|---|
-| c-omp | 4 | 20 | 1 |
-| sword-plain | 4 | 20 | 1 |
-| c-omp | 8 | 20 | 1 |
-| sword-plain | 8 | 20 | 1 |
+| c-omp | 2 | 100 | 1 |
+| sword-plain | 2 | 100 | 1 |
+| c-omp | 4 | 100 | 1 |
+| sword-plain | 4 | 100 | 1 |
+| c-omp | 8 | 100 | 1 |
+| sword-plain | 8 | 100 | 1 |
+| c-omp | 16 | 100 | 1 |
+| sword-plain | 16 | 100 | 1 |
 
 ### E2 — Monte Carlo, integral of exp(-x²) on [0, 1]
 
 | method | distinct results | values seen | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-thread | 8 of 8 | 0.74684708827440216 … 0.74692123466732596 | 89.3 | 18.2 | 6 |
-| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 50.1 | 10.1 | 3 |
-| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 148.9 | 35.6 | 16 |
-| sword-plain | 1 of 8 | 0.74688899599934544 | 357.6 | 89.9 | 16 |
-| sword-mix | 1 of 8 | 0.74675913289817852 | 154.2 | 41.1 | 16 |
-| sword-exact | 1 of 8 | 0.74688899599934688 | 436.2 | 139.6 | 8 |
+| c-thread | 8 of 8 | 0.74684708827440216 … 0.74692123466732596 | 67.3 | 20.7 | 16 |
+| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 48.9 | 12.4 | 16 |
+| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 142.1 | 41.9 | 16 |
+| sword-plain | 1 of 8 | 0.74688899599934544 | 378.1 | 110.7 | 4 |
+| sword-mix | 1 of 8 | 0.74675913289817852 | 151.0 | 51.2 | 16 |
+| sword-exact | 1 of 8 | 0.74688899599934688 | 436.5 | 146.4 | 6 |
 
 ### E3 — elementary functions, cost
 
 | function | C library (ns/call) | std/num (ns/call) |
 |---|---|---|
-| sin | 8.40 | 19.91 |
-| sinnear | 2.08 | 2.64 |
-| cos | 8.25 | 20.07 |
-| exp | 6.25 | 5.79 |
-| expunit | 2.48 | 6.90 |
-| log | 2.93 | 7.50 |
+| sin | 8.31 | 21.46 |
+| sinnear | 2.05 | 2.94 |
+| cos | 8.22 | 21.17 |
+| exp | 6.26 | 6.32 |
+| expunit | 2.66 | 7.39 |
+| log | 3.15 | 6.74 |
 
 ## linux-arm64-docker
 
 ```
 platform: linux-arm64-docker
-date: 2026-09-28T01:41:39Z
+date: 2026-10-04T15:33:48Z
 uname: Linux 7.0.12-linuxkit aarch64
 cpu: 0x000
 cores: 10
 cc: gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
 openmp: -fopenmp
-shield: shield 0.1.0 (Tamahagane)
-sword commit: 23acc20
+shield: shield 0.2.0 (Fold)
+sword commit: 867d50f
 python: Python 3.12.3
 threads: 1 2 3 4 6 8 10 16
 sum_n: 10000000 mc_n: 10000000 math_n: 1000000 reps: 7
@@ -247,72 +259,76 @@ note: Docker Desktop Linux VM on the same Apple M4
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 237 | 5.71 | 5.71 | 1 |
-| c-omp | 7 of 8 | 21–237 | 5.72 | 1.11 | 8 |
-| c-ompkahan | 1 of 8 | 0 | 19.14 | 3.71 | 10 |
-| sword-plain | 1 of 8 | 4 | 5.32 | 0.95 | 10 |
-| sword-kahan | 1 of 8 | 0 | 11.89 | 2.06 | 16 |
-| sword-exact | 1 of 8 | 0 | 17.46 | 3.39 | 16 |
+| c-serial | 1 of 1 | 237 | 5.74 | 5.74 | 1 |
+| c-omp | 7 of 8 | 21–237 | 5.69 | 1.10 | 8 |
+| c-ompkahan | 1 of 8 | 0 | 19.13 | 3.62 | 10 |
+| sword-plain | 1 of 8 | 4 | 5.28 | 0.96 | 8 |
+| sword-kahan | 1 of 8 | 0 | 11.56 | 2.13 | 10 |
+| sword-exact | 1 of 8 | 0 | 17.42 | 3.31 | 10 |
 
 **mixed** (correctly rounded sum 159165645829.89481)
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 243 | 5.76 | 5.76 | 1 |
-| c-omp | 8 of 8 | 37–243 | 5.71 | 1.10 | 8 |
-| c-ompkahan | 3 of 8 | 0–1 | 19.14 | 3.90 | 10 |
-| sword-plain | 1 of 8 | 30 | 5.37 | 0.93 | 10 |
-| sword-kahan | 1 of 8 | 0 | 11.92 | 2.01 | 10 |
-| sword-exact | 1 of 8 | 0 | 47.23 | 7.77 | 16 |
+| c-serial | 1 of 1 | 243 | 5.74 | 5.74 | 1 |
+| c-omp | 8 of 8 | 37–243 | 5.73 | 1.10 | 8 |
+| c-ompkahan | 3 of 8 | 0–1 | 19.13 | 3.86 | 10 |
+| sword-plain | 1 of 8 | 30 | 5.35 | 1.03 | 10 |
+| sword-kahan | 1 of 8 | 0 | 11.71 | 2.24 | 8 |
+| sword-exact | 1 of 8 | 0 | 45.77 | 7.78 | 10 |
 
 ### E1b — the same run repeated, thread count fixed (mixed data)
 
 | method | threads | runs | distinct results |
 |---|---|---|---|
-| c-omp | 4 | 20 | 1 |
-| sword-plain | 4 | 20 | 1 |
-| c-omp | 8 | 20 | 3 |
-| sword-plain | 8 | 20 | 1 |
+| c-omp | 2 | 100 | 1 |
+| sword-plain | 2 | 100 | 1 |
+| c-omp | 4 | 100 | 1 |
+| sword-plain | 4 | 100 | 1 |
+| c-omp | 8 | 100 | 3 |
+| sword-plain | 8 | 100 | 1 |
+| c-omp | 16 | 100 | 4 |
+| sword-plain | 16 | 100 | 1 |
 
 ### E2 — Monte Carlo, integral of exp(-x²) on [0, 1]
 
 | method | distinct results | values seen | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-thread | 8 of 8 | 0.74684708827440216 … 0.74692123466732607 | 33.1 | 5.7 | 10 |
-| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 15.5 | 3.5 | 8 |
-| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 86.4 | 17.5 | 16 |
-| sword-plain | 1 of 8 | 0.74688899599934544 | 156.1 | 26.0 | 16 |
-| sword-mix | 1 of 8 | 0.74675913289817852 | 68.5 | 11.5 | 16 |
-| sword-exact | 1 of 8 | 0.74688899599934688 | 316.7 | 44.5 | 16 |
+| c-thread | 8 of 8 | 0.74684708827440216 … 0.74692123466732607 | 33.1 | 6.2 | 10 |
+| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 15.5 | 3.9 | 16 |
+| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 86.9 | 19.4 | 10 |
+| sword-plain | 1 of 8 | 0.74688899599934544 | 157.5 | 27.7 | 16 |
+| sword-mix | 1 of 8 | 0.74675913289817852 | 67.9 | 11.6 | 16 |
+| sword-exact | 1 of 8 | 0.74688899599934688 | 315.1 | 34.9 | 16 |
 
 ### E3 — elementary functions, cost
 
 | function | C library (ns/call) | std/num (ns/call) |
 |---|---|---|
-| sin | 10.92 | 12.07 |
-| sinnear | 3.53 | 2.14 |
-| cos | 11.52 | 11.98 |
-| exp | 4.10 | 2.46 |
-| expunit | 2.21 | 4.17 |
-| log | 2.26 | 2.79 |
+| sin | 11.18 | 12.34 |
+| sinnear | 3.57 | 2.73 |
+| cos | 11.85 | 12.20 |
+| exp | 4.15 | 2.58 |
+| expunit | 2.32 | 4.38 |
+| log | 2.33 | 2.88 |
 
 ## macos-arm64
 
 ```
 platform: macos-arm64
-date: 2026-09-28T01:41:00Z
+date: 2026-10-04T15:10:10Z
 uname: Darwin 27.0.0 arm64
 cpu: Apple M4
 cores: 10
 cc: Apple clang version 21.0.0 (clang-2100.3.34.2)
 openmp: -Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
-shield: shield 0.1.0 (Tamahagane)
-sword commit: 23acc20
+shield: shield 0.2.0 (Fold)
+sword commit: 867d50f
 python: Python 3.14.7
 threads: 1 2 3 4 6 8 10 16
 sum_n: 10000000 mc_n: 10000000 math_n: 1000000 reps: 7
 only: all
-note: Apple M4, 4 performance and 6 efficiency cores
+note: Apple M4, 4 performance and 6 efficiency cores; one stuck process (issue #41) held ~10% of one core during the run
 ```
 
 ### E1 — summation of 10^7 doubles
@@ -321,72 +337,76 @@ note: Apple M4, 4 performance and 6 efficiency cores
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 237 | 6.79 | 6.79 | 1 |
-| c-omp | 7 of 8 | 20–237 | 5.06 | 0.94 | 10 |
-| c-ompkahan | 1 of 8 | 0 | 19.84 | 3.28 | 10 |
-| sword-plain | 1 of 8 | 4 | 5.83 | 0.83 | 10 |
-| sword-kahan | 1 of 8 | 0 | 6.63 | 1.10 | 16 |
-| sword-exact | 1 of 8 | 0 | 17.05 | 3.05 | 16 |
+| c-serial | 1 of 1 | 237 | 7.36 | 7.36 | 1 |
+| c-omp | 7 of 8 | 20–237 | 5.08 | 0.93 | 10 |
+| c-ompkahan | 1 of 8 | 0 | 19.87 | 3.37 | 10 |
+| sword-plain | 1 of 8 | 4 | 7.53 | 0.85 | 10 |
+| sword-kahan | 1 of 8 | 0 | 6.59 | 1.08 | 16 |
+| sword-exact | 1 of 8 | 0 | 17.29 | 3.15 | 10 |
 
 **mixed** (correctly rounded sum 159165645829.89481)
 
 | method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-serial | 1 of 1 | 243 | 5.01 | 5.01 | 1 |
-| c-omp | 8 of 8 | 37–243 | 5.01 | 0.94 | 10 |
-| c-ompkahan | 3 of 8 | 0–1 | 19.91 | 3.24 | 10 |
-| sword-plain | 1 of 8 | 30 | 5.04 | 0.85 | 10 |
-| sword-kahan | 1 of 8 | 0 | 6.64 | 1.07 | 16 |
-| sword-exact | 1 of 8 | 0 | 45.27 | 6.88 | 16 |
+| c-serial | 1 of 1 | 243 | 4.99 | 4.99 | 1 |
+| c-omp | 8 of 8 | 37–243 | 4.97 | 0.99 | 8 |
+| c-ompkahan | 3 of 8 | 0–1 | 19.72 | 3.68 | 16 |
+| sword-plain | 1 of 8 | 30 | 4.97 | 0.80 | 16 |
+| sword-kahan | 1 of 8 | 0 | 6.58 | 1.11 | 10 |
+| sword-exact | 1 of 8 | 0 | 44.42 | 7.02 | 16 |
 
 ### E1b — the same run repeated, thread count fixed (mixed data)
 
 | method | threads | runs | distinct results |
 |---|---|---|---|
-| c-omp | 4 | 20 | 1 |
-| sword-plain | 4 | 20 | 1 |
-| c-omp | 8 | 20 | 1 |
-| sword-plain | 8 | 20 | 1 |
+| c-omp | 2 | 100 | 1 |
+| sword-plain | 2 | 100 | 1 |
+| c-omp | 4 | 100 | 1 |
+| sword-plain | 4 | 100 | 1 |
+| c-omp | 8 | 100 | 1 |
+| sword-plain | 8 | 100 | 1 |
+| c-omp | 16 | 100 | 1 |
+| sword-plain | 16 | 100 | 1 |
 
 ### E2 — Monte Carlo, integral of exp(-x²) on [0, 1]
 
 | method | distinct results | values seen | 1 thread (ms) | fastest (ms) | at threads |
 |---|---|---|---|---|---|
-| c-thread | 8 of 8 | 0.74684708827440216 … 0.74692123466732596 | 32.2 | 5.9 | 16 |
-| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 19.9 | 3.9 | 16 |
-| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 59.8 | 11.6 | 16 |
-| sword-plain | 1 of 8 | 0.74688899599934544 | 157.4 | 26.1 | 16 |
-| sword-mix | 1 of 8 | 0.74675913289817852 | 70.4 | 11.5 | 16 |
-| sword-exact | 1 of 8 | 0.74688899599934688 | 310.6 | 38.4 | 16 |
+| c-thread | 8 of 8 | 0.74684708827440216 … 0.74692123466732596 | 32.2 | 6.1 | 10 |
+| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 20.0 | 4.4 | 8 |
+| c-philox | 7 of 8 | 0.74688899599929437 … 0.74688899599935521 | 59.5 | 12.0 | 16 |
+| sword-plain | 1 of 8 | 0.74688899599934544 | 158.7 | 26.3 | 16 |
+| sword-mix | 1 of 8 | 0.74675913289817852 | 70.8 | 11.8 | 16 |
+| sword-exact | 1 of 8 | 0.74688899599934688 | 315.1 | 40.4 | 16 |
 
 ### E3 — elementary functions, cost
 
 | function | C library (ns/call) | std/num (ns/call) |
 |---|---|---|
-| sin | 6.57 | 11.83 |
-| sinnear | 1.27 | 1.41 |
-| cos | 5.49 | 12.12 |
-| exp | 4.20 | 2.78 |
-| expunit | 1.76 | 4.28 |
-| log | 1.67 | 3.37 |
+| sin | 8.42 | 12.12 |
+| sinnear | 1.74 | 1.38 |
+| cos | 5.50 | 11.71 |
+| exp | 4.11 | 2.73 |
+| expunit | 1.66 | 4.20 |
+| log | 1.74 | 3.32 |
 
 ## E1, E2 — Sword's answers on different platforms
 
 | experiment | method | platforms | runs | distinct results |
 |---|---|---|---|---|
 | E1 mixed | c-serial | 5 | 5 | 1 |
-| E1 mixed | c-omp | 5 | 40 | 11 |
+| E1 mixed | c-omp | 5 | 40 | 13 |
 | E1 mixed | c-ompkahan | 5 | 40 | 3 |
 | E1 mixed | sword-plain | 5 | 40 | 1 |
 | E1 mixed | sword-kahan | 5 | 40 | 1 |
 | E1 mixed | sword-exact | 5 | 40 | 1 |
 | E1 uniform | c-serial | 5 | 5 | 1 |
-| E1 uniform | c-omp | 5 | 40 | 11 |
+| E1 uniform | c-omp | 5 | 40 | 10 |
 | E1 uniform | c-ompkahan | 5 | 40 | 1 |
 | E1 uniform | sword-plain | 5 | 40 | 1 |
 | E1 uniform | sword-kahan | 5 | 40 | 1 |
 | E1 uniform | sword-exact | 5 | 40 | 1 |
-| E2 | c-thread | 5 | 40 | 14 |
+| E2 | c-thread | 5 | 40 | 13 |
 | E2 | c-index | 5 | 40 | 11 |
 | E2 | c-philox | 5 | 40 | 10 |
 | E2 | sword-plain | 5 | 40 | 1 |

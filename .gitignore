@@ -7,3 +7,4 @@ data/gen
 math/args
 math/libm
 math/out/
+.venv/
