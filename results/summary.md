@@ -390,28 +390,102 @@ note: Apple M4, 4 performance and 6 efficiency cores; one stuck process (issue #
 | expunit | 1.66 | 4.20 |
 | log | 1.74 | 3.32 |
 
+## macos-arm64-atomic
+
+```
+platform: macos-arm64-atomic
+date: 2026-10-05T15:26:12Z
+uname: Darwin 27.0.0 arm64
+cpu: Apple M4
+cores: 10
+cc: Apple clang version 21.0.0 (clang-2100.3.34.2)
+openmp: -Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include -L/opt/homebrew/opt/libomp/lib -lomp
+shield: shield 0.2.0 (Fold)
+sword commit: a12748c
+python: Python 3.14.7
+threads: 1 2 3 4 6 8 10 16
+sum_n: 10000000 mc_n: 10000000 math_n: 1000000 reps: 7
+only: all
+note: libomp forçada a reduction atômica (KMP_FORCE_REDUCTION=atomic)
+```
+
+### E1 — summation of 10^7 doubles
+
+**uniform** (correctly rounded sum 5000576.9172228221)
+
+| method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
+|---|---|---|---|---|---|
+| c-serial | 1 of 1 | 237 | 6.76 | 6.76 | 1 |
+| c-omp | 7 of 8 | 21–237 | 4.88 | 0.97 | 8 |
+| c-ompkahan | 1 of 8 | 0 | 19.31 | 3.71 | 8 |
+| sword-plain | 1 of 8 | 4 | 6.66 | 0.87 | 10 |
+| sword-kahan | 1 of 8 | 0 | 6.44 | 1.16 | 10 |
+| sword-exact | 1 of 8 | 0 | 18.27 | 3.19 | 10 |
+
+**mixed** (correctly rounded sum 159165645829.89481)
+
+| method | distinct results | error (ULPs) | 1 thread (ms) | fastest (ms) | at threads |
+|---|---|---|---|---|---|
+| c-serial | 1 of 1 | 243 | 4.93 | 4.93 | 1 |
+| c-omp | 8 of 8 | 37–243 | 4.88 | 1.09 | 10 |
+| c-ompkahan | 3 of 8 | 0–1 | 19.29 | 3.86 | 8 |
+| sword-plain | 1 of 8 | 30 | 4.86 | 0.86 | 10 |
+| sword-kahan | 1 of 8 | 0 | 6.50 | 1.24 | 8 |
+| sword-exact | 1 of 8 | 0 | 45.06 | 7.62 | 16 |
+
+### E1b — the same run repeated, thread count fixed (mixed data)
+
+| method | threads | runs | distinct results |
+|---|---|---|---|
+| c-omp | 8 | 100 | 3 |
+| sword-plain | 8 | 100 | 1 |
+| c-omp | 16 | 100 | 3 |
+| sword-plain | 16 | 100 | 1 |
+
+### E2 — Monte Carlo, integral of exp(-x²) on [0, 1]
+
+| method | distinct results | values seen | 1 thread (ms) | fastest (ms) | at threads |
+|---|---|---|---|---|---|
+| c-thread | 8 of 8 | 0.74684708827440205 … 0.74692123466732596 | 32.3 | 6.4 | 8 |
+| c-index | 8 of 8 | 0.74675913289815332 … 0.74675913289820595 | 19.8 | 3.9 | 16 |
+| c-philox | 8 of 8 | 0.74688899599929437 … 0.74688899599935521 | 60.8 | 11.7 | 16 |
+| sword-plain | 1 of 8 | 0.74688899599934544 | 159.9 | 26.6 | 16 |
+| sword-mix | 1 of 8 | 0.74675913289817852 | 73.8 | 12.2 | 16 |
+| sword-exact | 1 of 8 | 0.74688899599934688 | 300.1 | 40.3 | 16 |
+
+### E3 — elementary functions, cost
+
+| function | C library (ns/call) | std/num (ns/call) |
+|---|---|---|
+| sin | 9.04 | 12.56 |
+| sinnear | 1.69 | 1.41 |
+| cos | 5.60 | 11.65 |
+| exp | 4.09 | 2.77 |
+| expunit | 1.60 | 4.23 |
+| log | 1.65 | 3.23 |
+
 ## E1, E2 — Sword's answers on different platforms
 
 | experiment | method | platforms | runs | distinct results |
 |---|---|---|---|---|
-| E1 mixed | c-serial | 5 | 5 | 1 |
-| E1 mixed | c-omp | 5 | 40 | 13 |
-| E1 mixed | c-ompkahan | 5 | 40 | 3 |
-| E1 mixed | sword-plain | 5 | 40 | 1 |
-| E1 mixed | sword-kahan | 5 | 40 | 1 |
-| E1 mixed | sword-exact | 5 | 40 | 1 |
-| E1 uniform | c-serial | 5 | 5 | 1 |
-| E1 uniform | c-omp | 5 | 40 | 10 |
-| E1 uniform | c-ompkahan | 5 | 40 | 1 |
-| E1 uniform | sword-plain | 5 | 40 | 1 |
-| E1 uniform | sword-kahan | 5 | 40 | 1 |
-| E1 uniform | sword-exact | 5 | 40 | 1 |
-| E2 | c-thread | 5 | 40 | 13 |
-| E2 | c-index | 5 | 40 | 11 |
-| E2 | c-philox | 5 | 40 | 10 |
-| E2 | sword-plain | 5 | 40 | 1 |
-| E2 | sword-mix | 5 | 40 | 1 |
-| E2 | sword-exact | 5 | 40 | 1 |
+| E1 mixed | c-serial | 6 | 6 | 1 |
+| E1 mixed | c-omp | 6 | 48 | 13 |
+| E1 mixed | c-ompkahan | 6 | 48 | 3 |
+| E1 mixed | sword-plain | 6 | 48 | 1 |
+| E1 mixed | sword-kahan | 6 | 48 | 1 |
+| E1 mixed | sword-exact | 6 | 48 | 1 |
+| E1 uniform | c-serial | 6 | 6 | 1 |
+| E1 uniform | c-omp | 6 | 48 | 11 |
+| E1 uniform | c-ompkahan | 6 | 48 | 1 |
+| E1 uniform | sword-plain | 6 | 48 | 1 |
+| E1 uniform | sword-kahan | 6 | 48 | 1 |
+| E1 uniform | sword-exact | 6 | 48 | 1 |
+| E2 | c-thread | 6 | 48 | 15 |
+| E2 | c-index | 6 | 48 | 11 |
+| E2 | c-philox | 6 | 48 | 10 |
+| E2 | sword-plain | 6 | 48 | 1 |
+| E2 | sword-mix | 6 | 48 | 1 |
+| E2 | sword-exact | 6 | 48 | 1 |
 
 ## E3 — the same arguments on different platforms
 
@@ -421,40 +495,60 @@ note: Apple M4, 4 performance and 6 efficiency cores; one stuck process (issue #
 | sin | gh-linux-arm64 vs gh-macos-arm64 | 40563 of 1000000 | 0 of 1000000 |
 | sin | gh-linux-arm64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | sin | gh-linux-arm64 vs macos-arm64 | 40563 of 1000000 | 0 of 1000000 |
+| sin | gh-linux-arm64 vs macos-arm64-atomic | 40563 of 1000000 | 0 of 1000000 |
 | sin | gh-linux-x86_64 vs gh-macos-arm64 | 40563 of 1000000 | 0 of 1000000 |
 | sin | gh-linux-x86_64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | sin | gh-linux-x86_64 vs macos-arm64 | 40563 of 1000000 | 0 of 1000000 |
+| sin | gh-linux-x86_64 vs macos-arm64-atomic | 40563 of 1000000 | 0 of 1000000 |
 | sin | gh-macos-arm64 vs linux-arm64-docker | 40563 of 1000000 | 0 of 1000000 |
 | sin | gh-macos-arm64 vs macos-arm64 | 0 of 1000000 | 0 of 1000000 |
+| sin | gh-macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 | sin | linux-arm64-docker vs macos-arm64 | 40563 of 1000000 | 0 of 1000000 |
+| sin | linux-arm64-docker vs macos-arm64-atomic | 40563 of 1000000 | 0 of 1000000 |
+| sin | macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 | cos | gh-linux-arm64 vs gh-linux-x86_64 | 0 of 1000000 | 0 of 1000000 |
 | cos | gh-linux-arm64 vs gh-macos-arm64 | 40715 of 1000000 | 0 of 1000000 |
 | cos | gh-linux-arm64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | cos | gh-linux-arm64 vs macos-arm64 | 40715 of 1000000 | 0 of 1000000 |
+| cos | gh-linux-arm64 vs macos-arm64-atomic | 40715 of 1000000 | 0 of 1000000 |
 | cos | gh-linux-x86_64 vs gh-macos-arm64 | 40715 of 1000000 | 0 of 1000000 |
 | cos | gh-linux-x86_64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | cos | gh-linux-x86_64 vs macos-arm64 | 40715 of 1000000 | 0 of 1000000 |
+| cos | gh-linux-x86_64 vs macos-arm64-atomic | 40715 of 1000000 | 0 of 1000000 |
 | cos | gh-macos-arm64 vs linux-arm64-docker | 40715 of 1000000 | 0 of 1000000 |
 | cos | gh-macos-arm64 vs macos-arm64 | 0 of 1000000 | 0 of 1000000 |
+| cos | gh-macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 | cos | linux-arm64-docker vs macos-arm64 | 40715 of 1000000 | 0 of 1000000 |
+| cos | linux-arm64-docker vs macos-arm64-atomic | 40715 of 1000000 | 0 of 1000000 |
+| cos | macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 | exp | gh-linux-arm64 vs gh-linux-x86_64 | 0 of 1000000 | 0 of 1000000 |
 | exp | gh-linux-arm64 vs gh-macos-arm64 | 1765 of 1000000 | 0 of 1000000 |
 | exp | gh-linux-arm64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | exp | gh-linux-arm64 vs macos-arm64 | 1765 of 1000000 | 0 of 1000000 |
+| exp | gh-linux-arm64 vs macos-arm64-atomic | 1765 of 1000000 | 0 of 1000000 |
 | exp | gh-linux-x86_64 vs gh-macos-arm64 | 1765 of 1000000 | 0 of 1000000 |
 | exp | gh-linux-x86_64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | exp | gh-linux-x86_64 vs macos-arm64 | 1765 of 1000000 | 0 of 1000000 |
+| exp | gh-linux-x86_64 vs macos-arm64-atomic | 1765 of 1000000 | 0 of 1000000 |
 | exp | gh-macos-arm64 vs linux-arm64-docker | 1765 of 1000000 | 0 of 1000000 |
 | exp | gh-macos-arm64 vs macos-arm64 | 0 of 1000000 | 0 of 1000000 |
+| exp | gh-macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 | exp | linux-arm64-docker vs macos-arm64 | 1765 of 1000000 | 0 of 1000000 |
+| exp | linux-arm64-docker vs macos-arm64-atomic | 1765 of 1000000 | 0 of 1000000 |
+| exp | macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 | log | gh-linux-arm64 vs gh-linux-x86_64 | 0 of 1000000 | 0 of 1000000 |
 | log | gh-linux-arm64 vs gh-macos-arm64 | 7 of 1000000 | 0 of 1000000 |
 | log | gh-linux-arm64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | log | gh-linux-arm64 vs macos-arm64 | 7 of 1000000 | 0 of 1000000 |
+| log | gh-linux-arm64 vs macos-arm64-atomic | 7 of 1000000 | 0 of 1000000 |
 | log | gh-linux-x86_64 vs gh-macos-arm64 | 7 of 1000000 | 0 of 1000000 |
 | log | gh-linux-x86_64 vs linux-arm64-docker | 0 of 1000000 | 0 of 1000000 |
 | log | gh-linux-x86_64 vs macos-arm64 | 7 of 1000000 | 0 of 1000000 |
+| log | gh-linux-x86_64 vs macos-arm64-atomic | 7 of 1000000 | 0 of 1000000 |
 | log | gh-macos-arm64 vs linux-arm64-docker | 7 of 1000000 | 0 of 1000000 |
 | log | gh-macos-arm64 vs macos-arm64 | 0 of 1000000 | 0 of 1000000 |
+| log | gh-macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 | log | linux-arm64-docker vs macos-arm64 | 7 of 1000000 | 0 of 1000000 |
+| log | linux-arm64-docker vs macos-arm64-atomic | 7 of 1000000 | 0 of 1000000 |
+| log | macos-arm64 vs macos-arm64-atomic | 0 of 1000000 | 0 of 1000000 |
 
